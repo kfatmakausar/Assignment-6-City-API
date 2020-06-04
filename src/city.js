@@ -66,18 +66,7 @@ class City extends Component {
             </input>
             <div className ="city">{display}</div>
         </div> 
-        ) 
-        
-        
-        
-        
-    
-        
-
-   
-        
-        
+        )     
     }
 }
-
 export default City;
