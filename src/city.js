@@ -5,18 +5,22 @@ class City extends Component {
     constructor(props) {
         super(props);
         this.state = { 
-            zipcode: []
+            zipcode: [],
+            cityName: null
          };
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    componentDidMount() {
+
+    //COMPONENTDIDUPDATE IS USED INSTEAD OF COMPONENTDIDMOUNT BECAUSE COMPONENTDIDUPDATE ONLY RUNS IF STATE IS UPDATED
+    //FOR THE USER INPUT AND COMPONENTDIDMOUNT RUNS EITHER WAY REGARDLESS OF WHETHER STATE IS UPDATED OR NOT
+    componentDidUpdate() {
         axios 
-        .get("http://ctp-zip-api.herokuapp.com/city/SPRINGFIELD")
+        .get("http://ctp-zip-api.herokuapp.com/city/" + this.state.cityName.toUpperCase())
         .then((response) => {
             const data = response.data;
-            console.log(data);
             const newZipObj = {
-                zipcode: data
+                zipcodeList: data
             };
 
             this.setState({zipcode: newZipObj});
@@ -24,23 +28,55 @@ class City extends Component {
         .catch((err) => console.log(err));
     }
 
+    //HANDLECHANGE DEALS WITH CHANGING THE STATE OF THE INPUT FIELD AND SAVING IT 
+    handleChange(e) {
+        this.setState({
+          [e.target.name]: e.target.value,
+        });
+      }
 
+    //RENDER() HAS A CONDITION WHICH DEALS WITH IF THE USER HAS ENTERED A VALID CITY NAME, 
+    //THEN THE LIST OF ZIPCODES WILL DISPLAY USING THE MAP METHOD IN DISPLAY METHOD.
+    //IF IT IS NOT A VALID CITY NAME, THEN WILL DISPLAY LOADING...
     render() {
         let display;
-        if(!this.state.zipcode.zipcode) {
+        if(!this.state.zipcode.zipcodeList) {
             display = <p>Loading...</p>;
         } else {
+            console.log(this.state.cityName);
             display = (
                 <>
                 <ul>
-                    {this.state.zipcode.zipcode.map((zipcode) => <li key= { zipcode }> {zipcode} </li>)}
+                    {this.state.zipcode.zipcodeList.map((zipcode) => <li key= { zipcode }> {zipcode} </li>)}
                 
                 </ul>
                 </>
             );
         }
 
-        return <div className ="cityName">{display}</div>
+        //RETURN PROMPTS USER TO ENTER CITY IN THE TEXTFIELD AND DISPLAY THE ZIPCODES USING THE MAP METHOD FROM DISPLAY FUNCTION
+        return(
+        <div>
+            <p> Enter city to retrieve zipcodes: </p>
+            <input
+                type= "text"
+                name = "cityName"
+                defaultValue = {this.state.cityName}
+                onChange={(e) => this.handleChange(e)} >
+            </input>
+            <div className ="city">{display}</div>
+        </div> 
+        ) 
+        
+        
+        
+        
+    
+        
+
+   
+        
+        
     }
 }
 
